@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal website showcasing projects, research, and thought work.">
+    <title>Jay Parmar — Builder, Founder, Researcher</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header / Nav -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <a href="#hero">JP</a>
+            </div>
+            <a href="mailto:contact@jayparmar.dev" class="nav-contact">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <p class="eyebrow">Hello, I'm</p>
+                    <h1 class="name">Jay Parmar</h1>
+                    <p class="thesis">A software architect who builds systems that scale, researches distributed computing, and writes about engineering at the intersection of theory and practice.</p>
+                    <div class="now-ticker">
+                        <span class="ticker-label">now</span>
+                        <span class="ticker-item">building AssetReady — CTO & co-founder</span>
+                    </div>
+                </div>
+                <div class="constellation-hero">
+                    <svg id="hero-constellation" viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background fill to make constellation visible <!--
+                        <rect x="0" y="0" width="1" height="1" fill="var(--color-paper)"/>
+                        <defs>
+                            <clipPath id="node-label-clip">
+                                <rect x="0" y="0" width="1" height="1"/>
+                            </clipPath>
+                        </defs>
+                        <!-- Lines connecting nodes -->
+                        <g class="constellation-lines"></g>
+                        <!-- Nodes -->
+                        <g class="constellation-nodes"></g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Now Strip -->
+        <section id="now" class="now-strip">
+            <div class="now-container">
+                <h2 class="now-title">
+                    <span class="now-label">maintenance</span>
+                    What's current
+                </h2>
+                <ul class="now-list">
+                    <li class="now-item">
+                        <span class="now-date">Jun 2026</span>
+                        <span class="now-text">CTO at AssetReady — scaling infrastructure for 10k+ daily users</span>
+                    </li>
+                    <li class="now-item">
+                        <span class="now-date">May 2026</span>
+                        <span class="now-text">Published "Distributed Consensus in Noisy Networks" on arXiv</span>
+                    </li>
+                    <li class="now-item">
+                        <span class="now-date">Apr 2026</span>
+                        <span class="now-text">Speaking at DevConf on "Building Resilient Microservices Systems"</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Builder Section -->
+        <section id="builder" class="builder">
+            <div class="section-header">
+                <span class="section-label">selected work</span>
+                <div class="section-node-pair">
+                    <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="5" cy="5" r="2" fill="#232623"/>
+                        <circle cx="15" cy="15" r="2" fill="#232623"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="builder-content">
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <h3 class="project-title">AssetReady</h3>
+                        <div class="project-stack">
+                            <span class="stack-tag">Node.js</span>
+                            <span class="stack-tag">PostgreSQL</span>
+                            <span class="stack-tag">Kubernetes</span>
+                        </div>
+                    </div>
+                    <p class="project-description">A comprehensive asset management platform that helps teams track, organize, and collaborate on technical projects. Built with a focus on developer experience and scalability.</p>
+                    <a href="https://assetready.io" class="project-link" target="_blank" rel="noopener">Visit →</a>
+                </div>
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <h3 class="project-title">Distributed Systems Lab</h3>
+                        <div class="project-stack">
+                            <span class="stack-tag">Rust</span>
+                            <span class="stack-tag">gRPC</span>
+                            <span class="stack-tag">Apache Kafka</span>
+                        </div>
+                    </div>
+                    <p class="project-description">An open-source library for building fault-tolerant distributed systems with automatic leader election and consensus protocols. Used by several startups in production.</p>
+                    <a href="https://github.com/jayparmar/distributed-lab" class="project-link" target="_blank" rel="noopener">View on GitHub →</a>
+                </div>
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <h3 class="project-title">Query Optimizer</h3>
+                        <div class="project-stack">
+                            <span class="stack-tag">C++</span>
+                            <span class="stack-tag">SQL</span>
+                            <span class="stack-tag">ML</span>
+                        </div>
+                    </div>
+                    <p class="project-description">A machine learning-based query optimizer that improves database performance by 40% on average for complex analytical queries. Published research at VLDB 2024.</p>
+                    <a href="https://queryoptimizer.dev" class="project-link" target="_blank" rel="noopener">Read paper →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Founder Section -->
+        <section id="founder" class="founder">
+            <div class="section-header">
+                <span class="section-label">what I own</span>
+                <div class="section-node-pair">
+                    <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="5" cy="5" r="2" fill="#232623"/>
+                        <circle cx="15" cy="15" r="2" fill="#232623"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="founder-content">
+                <p>AssetReady is the platform I'm building to help engineering teams manage their technical debt, infrastructure, and knowledge assets in one unified system. We've grown from a side project to over 10,000 daily active users.</p>
+                <p class="founder-cto">As CTO and co-founder, I architect our distributed systems, lead our engineering culture, and ensure we're building the right things at the right scale.</p>
+            </div>
+        </section>
+
+        <!-- Researcher Section -->
+        <section id="researcher" class="researcher">
+            <div class="section-header">
+                <span class="section-label">publications</span>
+                <div class="section-node-pair">
+                    <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="5" cy="5" r="2" fill="#232623"/>
+                        <circle cx="15" cy="15" r="2" fill="#232623"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="researcher-content">
+                <div class="publication">
+                    <h4 class="publication-title">Distributed Consensus in Noisy Networks</h4>
+                    <span class="publication-venue">arXiv preprint, June 2026</span>
+                    <p class="publication-summary">A theoretical analysis of consensus protocols under network noise and Byzantine failures. Introduces a novel fault tolerance bound that improves upon traditional Raft limits.</p>
+                </div>
+                <div class="publication">
+                    <h4 class="publication-title">Machine Learning for Query Optimization</h4>
+                    <span class="publication-venue">VLDB 2024</span>
+                    <p class="publication-summary">Empirical study showing ML-based cost estimation outperforms traditional statistical models by 35% on complex analytical workloads.</p>
+                </div>
+                <div class="publication">
+                    <h4 class="publication-title">Scalable Leader Election in Partitioned Networks</h4>
+                    <span class="publication-venue">Under review at OSDI 2025</span>
+                    <p class="publication-summary">Proposes a new leader election algorithm that maintains liveness during network partitions while minimizing split-brain scenarios.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Human Section -->
+        <section id="human" class="human">
+            <div class="section-header">
+                <span class="section-label">beyond work</span>
+                <div class="section-node-pair">
+                    <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="5" cy="5" r="2" fill="#232623"/>
+                        <circle cx="15" cy="15" r="2" fill="#232623"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="human-content">
+                <p>When I'm not building systems or writing papers, I'm hiking the trails around Seattle, brewing pour-over coffee, or reading philosophy. I believe the best engineers are the ones who can step away from the terminal and remember what it means to be human.</p>
+                <p>Currently reading: "Meditations" by Marcus Aurelius and "The Design of Everyday Things" by Don Norman.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-constellation">
+                <svg id="footer-constellation" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g class="footer-lines"></g>
+                    <g class="footer-nodes"></g>
+                </svg>
+            </div>
+            <div class="footer-links">
+                <a href="mailto:contact@jayparmar.dev" class="footer-link">Email</a>
+                <a href="https://github.com/jayparmar" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://linkedin.com/in/jayparmar" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+            <p class="colophon">
+                Built with vanilla HTML/CSS/JS. No frameworks. No regrets.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Constellation JavaScript -->
+    <script src="constellation.js"></script>
+</body>
+</html>

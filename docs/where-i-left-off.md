@@ -2,19 +2,16 @@
 
 > Orchestrator-owned, **overwritten** each checkpoint. Auto-injected at session start via the `SessionStart` hook. Keep it short and current.
 
-**Active goal:** Config complete with benchmark-chosen models; first end-to-end verification pending.
+**Active goal:** Personal website — scaffold exists at `index.html` (777 lines). Constellation Kite Shape implementation is ready to be executed natively.
 
-**Models (two-tier):**
-- **Orchestrator (main)** = `hf.co/Jackrong/Qwen3.5-9B-DeepSeek-V4-Flash-GGUF:Q4_K_M` — reasoning + 256k context (~12.5 tok/s).
-- **Coding/worker subagents (haiku tier)** = `deepseek-coder-v2:16b-lite-instruct-q4_K_M` — fast coder (~24 tok/s, 160k max).
-- `qwen3.5:4b` remains downloaded if a cheaper third tier is wanted.
+**Architecture (Hybrid Workflow):**
+- **Model** = `qwen3.5-9b-claude-opus-fast`.
+- We use a hybrid workflow. Use the `/plan` skill to generate task specs via the highly optimized `plan.py` script.
+- For execution, rely entirely on Claude Code's native editing tools.
 
-**Ollama env:** `FLASH_ATTENTION=1`, `KV_CACHE_TYPE=q8_0`, `CONTEXT_LENGTH=262144`, `MAX_LOADED_MODELS=2`, `NUM_PARALLEL=1`.
+**Key files:**
+- `CLAUDE.md` — operating rules and workflow docs.
+- `docs/tasks/next.md` — current task spec.
+- `index.html` — where the site is built.
 
-**Next step (exact):** Launch `cd C:\dev\agentic; .\launch.ps1`, run `/model` (expect the 9B), then trigger the `implementer` subagent and confirm `ollama ps` shows `deepseek-coder-v2` loaded alongside the 9B (proves per-request tier routing).
-
-**Owned/open files:** none in progress.
-
-**Decisions:** `docs/decisions/0001-architecture.md`, `0002-model-selection.md`. Full history in `docs/PROGRESS.md`.
-
-**Follow-ups:** enable web search (Brave/Tavily key → `.mcp.json`); optionally cap the coder's context lower than 160k for speed.
+**Next step:** Read `docs/tasks/next.md` and implement the Constellation Kite shape directly in `index.html` using native edit tools.

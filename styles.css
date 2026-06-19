@@ -1,0 +1,720 @@
+/* =============================================
+   DESIGN SYSTEM
+   =============================================
+
+   Colors:
+   - Paper: #FAFAF7 (page background)
+   - Graphite: #232623 (primary text, nodes, lines)
+   - Fern: #0F6E56 (accent — links, hover, eyebrow)
+   - Stone: #7A7A72 (secondary text, captions)
+
+   Typography:
+   - Headings: Inter (weight 500)
+   - Body: Inter (17-18px, 1.7 line-height, 62ch max-width)
+   - Mono: JetBrains Mono (ticker, labels, metadata)
+
+   Spacing:
+   - Section gap: 120-160px desktop
+*/
+
+/* CSS Custom Properties */
+:root {
+  /* Colors */
+  --color-paper: #FAFAF7;
+  --color-graphite: #232623;
+  --color-fern: #0F6E56;
+  --color-stone: #7A7A72;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Fira Mono', monospace;
+
+  /* Spacing */
+  --spacing-section-desktop: 160px;
+  --spacing-section-mobile: 80px;
+
+  /* Animation */
+  --drift-amplitude: 8px;
+  --drift-duration: 10s;
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --hover-glow-radius: 20px;
+  --hover-glow-opacity: 0.6;
+
+  /* Constellation Animations */
+  --constellation-drift-amplitude: 8px;
+  --constellation-drift-duration: 10s;
+  --constellation-node-radius: 5px;
+  --constellation-line-opacity: 0.18;
+  --constellation-glow-opacity: 0.3;
+  --constellation-hub-size: 8px;
+  --constellation-node-size: 4px;
+  --constellation-line-length: 30px;
+}
+
+/* Base Reset & Box Model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Document */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+/* Body */
+body {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-graphite);
+  background-color: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links */
+a {
+  color: var(--color-fern);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-graphite);
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1.5rem;
+  max-width: 62ch;
+}
+
+/* Eyebrow */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-stone);
+  margin-bottom: 0.5rem;
+}
+
+/* =============================================
+   LAYOUT
+   =============================================
+*/
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-paper);
+  border-bottom: 1px solid rgba(35, 38, 35, 0.05);
+  z-index: 100;
+  padding: 0 2rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nav-brand a {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--color-graphite);
+  transition: none;
+}
+
+.nav-brand a:hover {
+  color: var(--color-graphite);
+}
+
+.nav-contact {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-stone);
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(35, 38, 35, 0.1);
+  border-radius: 4px;
+  transition: border-color var(--transition-fast);
+}
+
+.nav-contact:hover {
+  color: var(--color-fern);
+  border-color: var(--color-fern);
+}
+
+/* Main */
+main {
+  padding-top: 72px;
+}
+
+/* Section Spacing */
+section {
+  padding: var(--spacing-section-mobile) 2rem;
+}
+
+@media (min-width: 768px) {
+  section {
+    padding: var(--spacing-section-desktop) 2rem;
+  }
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-node-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-node-pair svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* =============================================
+   HERO
+   =============================================
+*/
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .hero {
+    padding: 8rem 0;
+  }
+
+  .hero-content {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.hero-text .thesis {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--color-graphite);
+  max-width: 56ch;
+  margin-bottom: 2rem;
+}
+
+.now-ticker {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-stone);
+}
+
+.ticker-label {
+  opacity: 0.6;
+}
+
+.ticker-item {
+  opacity: 0.9;
+}
+
+/* Constellation Hero */
+.constellation-hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.constellation-hero svg {
+  width: 100%;
+  height: auto;
+  max-width: 320px;
+}
+
+/* Constellation Nodes - CSS fallback animations */
+.constellation-nodes .node {
+  transition: fill var(--transition-base);
+}
+
+.constellation-nodes .node-group:hover .node {
+  fill: var(--color-fern) !important;
+}
+
+.constellation-nodes .node-label {
+  transition: fill var(--transition-fast);
+}
+
+.constellation-nodes .node-group:hover .node-label {
+  fill: var(--color-stone) !important;
+}
+
+/* Node glow effect */
+.node-glow {
+  transition: r var(--transition-base), opacity var(--transition-base);
+}
+
+.node-group:hover .node-glow {
+  r: var(--hover-glow-radius) !important;
+  opacity: var(--hover-glow-opacity) !important;
+}
+
+/* =============================================
+   NOW STRIP
+   =============================================
+*/
+
+.now-strip {
+  background-color: rgba(35, 38, 35, 0.02);
+  border-top: 1px solid rgba(35, 38, 35, 0.05);
+  border-bottom: 1px solid rgba(35, 38, 35, 0.05);
+  padding: 3rem 2rem;
+}
+
+.now-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.now-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.now-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-stone);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.now-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.now-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-graphite);
+}
+
+.now-date {
+  opacity: 0.6;
+  min-width: 80px;
+}
+
+.now-text {
+  opacity: 0.9;
+}
+
+/* =============================================
+   BUILDER
+   =============================================
+*/
+
+.builder .section-header {
+  margin-bottom: 2.5rem;
+}
+
+.builder-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 600px) {
+  .builder-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .builder-content {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.project-card {
+  background-color: var(--color-paper);
+  border: 1px solid rgba(35, 38, 35, 0.05);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: border-color var(--transition-base);
+}
+
+.project-card:hover {
+  border-color: var(--color-fern);
+}
+
+.project-card-header {
+  margin-bottom: 1rem;
+}
+
+.project-title {
+  margin-bottom: 0.5rem;
+  color: var(--color-graphite);
+}
+
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stack-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-stone);
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(35, 38, 35, 0.03);
+  border-radius: 3px;
+}
+
+.project-description {
+  font-size: 0.9375rem;
+  color: var(--color-graphite);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.project-link {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-fern);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.project-link:hover {
+  color: var(--color-graphite);
+}
+
+/* =============================================
+   FOUNDER
+   =============================================
+*/
+
+.founder .section-header {
+  margin-bottom: 2rem;
+}
+
+.founder-content {
+  max-width: 62ch;
+}
+
+.founder-cto {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  color: var(--color-stone);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(35, 38, 35, 0.1);
+}
+
+/* =============================================
+   RESEARCHER
+   =============================================
+*/
+
+.researcher .section-header {
+  margin-bottom: 2rem;
+}
+
+.researcher-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .researcher-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.publication {
+  background-color: var(--color-paper);
+  border: 1px solid rgba(35, 38, 35, 0.05);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.publication-title {
+  color: var(--color-graphite);
+  margin-bottom: 0.25rem;
+}
+
+.publication-venue {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-stone);
+  margin-bottom: 0.75rem;
+}
+
+.publication-summary {
+  font-size: 0.9375rem;
+  color: var(--color-graphite);
+  line-height: 1.6;
+}
+
+/* =============================================
+   HUMAN
+   =============================================
+*/
+
+.human .section-header {
+  margin-bottom: 1.5rem;
+}
+
+.human-content {
+  max-width: 56ch;
+  color: var(--color-graphite);
+}
+
+/* =============================================
+   FOOTER
+   =============================================
+*/
+
+.footer {
+  background-color: var(--color-graphite);
+  color: var(--color-paper);
+  padding: 4rem 2rem 2rem;
+  margin-top: 6rem;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.footer-constellation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-constellation svg {
+  width: 60px;
+  height: 60px;
+  opacity: 0.3;
+}
+
+/* =============================================
+   CONSTELLATION ANIMATIONS
+   ============================================= */
+
+/* Hub pulse animation */
+.constellation-hub {
+  animation: hub-pulse 3s ease-in-out infinite;
+}
+
+@keyframes hub-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Node hover pulse */
+.constellation-node {
+  transition: fill var(--transition-fast), transform var(--transition-fast);
+}
+
+.constellation-node:hover {
+  transform: scale(1.2);
+}
+
+/* Node glow effect */
+.constellation-node-glow {
+  opacity: var(--constellation-glow-opacity);
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+
+.constellation-node-glow:hover {
+  opacity: 0.6;
+}
+
+/* Constellation hover states */
+.constellation-hero:hover .constellation-lines,
+.constellation-hero:hover .constellation-nodes {
+  animation: constellation-drift 8s ease-in-out infinite;
+}
+
+@keyframes constellation-drift {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(4px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(0.5deg);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .constellation-lines,
+  .constellation-nodes,
+  .constellation-hub {
+    animation: none;
+    transition: none;
+  }
+
+  .constellation-node:hover {
+    transform: none;
+  }
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.footer-link {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: rgba(250, 250, 247, 0.7);
+  transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--color-paper);
+}
+
+.colophon {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgba(250, 250, 247, 0.4);
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* =============================================
+   REDUCED MOTION
+   =============================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* =============================================
+   RESPONSIVE ADJUSTMENTS
+   =============================================
+*/
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  .nav-brand a {
+    font-size: 1rem;
+  }
+
+  .hero {
+    padding: 5rem 1rem;
+  }
+
+  section {
+    padding: var(--spacing-section-mobile) 1rem;
+  }
+}

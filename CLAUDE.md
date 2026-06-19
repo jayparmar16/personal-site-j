@@ -1,35 +1,44 @@
-# Agentic Coding + Research System — Operating Rules
+# Hybrid Claude Code Operating Rules
 
-Local multi-agent system: **Claude Code harness on local Ollama models**. The main agent (orchestrator) runs on `qwen3-coder:30b`; subagents run on `qwen3.5:4b` (optional mid-tier `qwen3.5:9b`). Read this file fully — it is the shared contract every agent follows.
+This project runs a hybrid environment. We use a custom Python script to plan tasks (`plan.py`) via the `/plan` skill, and native Claude Code tools for execution.
 
-## Roles
-- **Orchestrator = `Qwen3.5-9B-DeepSeek-V4-Flash` (256k context):** plans, decomposes work, integrates results, routes subagents, and makes ALL writes to shared files. Does the judgment-heavy thinking.
-- **Coding/worker subagents = `deepseek-coder-v2:16b-lite` (haiku tier):** the fast, code-specialized model that implements scoped tasks and does search/summarize/test grunt work. **Validate their output** before relying on it. (`qwen3.5:4b` remains available for an optional cheaper tier.)
+## Architecture
 
-## Hard rules
-1. **One writer per file.** No two agents may write the same file. Every task owns a disjoint set of writable files. **Shared files** (configs, `__init__.py`, route/registry tables, anything under `docs/`) are **orchestrator-only**.
-2. **Writing subagents use worktree isolation** (`isolation: worktree`) so edits can't collide. Spawn them one at a time — parallel worktree creation can hit a `.git/config` lock.
-3. **Write files with the Write/Edit tools only.** Never create/modify files via PowerShell `echo`/`>`/`Set-Content` (UTF-16 BOM + long-path failures).
-4. **Keep ≤ 2–3 subagents.** Inference is serial on one GPU, so more agents = queue, not speed. Sequence write tasks; parallelize only read/research.
+- **Model:** `qwen3.5-9b-claude-opus-fast`
+- **Planning:** Handled via `/plan` which delegates to a specialized Python script to keep the 9B model focused and granular.
+- **Execution:** Fully relies on Claude Code's native file reading, bash execution, and search/replace tools.
 
-## Task decomposition (orchestrator)
-1. **Read `docs/PROGRESS.md` first** to load current state.
-2. Break work into small tasks; each task = one coherent unit with: **owned files**, read-only context, and an **acceptance check** (compiles / test passes / file exists).
-3. Hand a subagent only its narrow spec + minimal tools. Prefer giving subagents read/analyze jobs and doing the actual code writes yourself, unless a task is cleanly isolated (then use the `implementer` agent).
+## The Three-Stage Workflow (CRITICAL)
 
-## Shared state & alignment
-- **`docs/PROGRESS.md`** = living ledger (orchestrator-owned, single writer). After each subagent returns, append a short entry: task, status, files changed, decisions, follow-ups.
-- **`docs/decisions/NNNN-*.md`** = record significant architectural decisions.
-- Inject the relevant slice of `PROGRESS.md` into each subagent prompt so it starts aligned. **State lives on disk** — it must survive context compaction.
-- **`docs/where-i-left-off.md`** = your **resume card**. You (the orchestrator) are the ONLY one who can write it — subagents can't see your context. Keep it current: active goal, what's done, the exact next step, owned/open files, key decisions. **Overwrite** it at each milestone and before any `/clear` or when the session grows long. A `SessionStart` hook auto-injects it after compaction/clear/resume, but read it first thing regardless.
+You must ALWAYS operate in a strict three-stage workflow to prevent unapproved code execution.
 
-## Tools
-- Built-in tools (Read/Write/Edit/Glob/Grep/Bash) run client-side and work on the Ollama backend.
-- Web research needs the MCP search server — copy `.mcp.json.example` to `.mcp.json`, add an API key, then add the tool to the `researcher` agent's `tools:`. The built-in `WebSearch`/`WebFetch` do NOT work on local models.
-- Tools are chosen by the model from their name+description. Keep subagent toolsets minimal and descriptions unambiguous (Ollama can't force a tool).
+### Stage 1: Planning Mode
+When given a new task by the user, you must trigger the `/plan` skill.
+1. The `/plan` skill will run `python plan.py` which generates a high-level spec in `docs/tasks/next.md`.
+2. Wait for it to finish and read the plan.
+3. **STOP.** Do not edit code. Tell the user to run `/breakdown`.
+
+### Stage 2: Breakdown Mode
+When the user asks to breakdown the plan, you must trigger the `/breakdown` skill.
+1. The `/breakdown` skill will run `python breakdown.py` which expands `next.md` into `phase-1.md`, `phase-2.md`, etc.
+2. Wait for it to finish and list the generated files.
+3. **STOP.** Do not edit code. Ask the user which phase to execute.
+
+### Stage 3: Execution Mode
+You are only in **Execution Mode** if the user explicitly asks you to execute a specific phase file (e.g., "Execute phase-1.md").
+1. Read the specific `phase-X.md` file.
+2. ONLY execute the specific steps in that file.
+3. Use your native search/replace tools to execute the steps surgically.
+4. Verify the work.
+5. Update `docs/PROGRESS.md` with the completed task once all phases are done.
+
+## State management
+
+- **`docs/PROGRESS.md`** — Living ledger. One entry per completed task. Update this after Phase 2 finishes.
+- **`docs/where-i-left-off.md`** — Resume card. Overwrite at each milestone. This injects context into the start of new sessions.
+- **`docs/tasks/next.md`** — The living task spec you write during Phase 1.
 
 ## Coding principles
-- Think before coding; state assumptions; ask when unclear.
 - Simplest code that solves the problem; no speculative abstractions.
-- Surgical changes; match existing style; every changed line traces to the request.
+- Surgical changes using native edit tools.
 - Define a success check and loop until it passes.
