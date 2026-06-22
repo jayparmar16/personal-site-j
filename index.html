@@ -40,18 +40,8 @@
                     </div>
                 </div>
                 <div class="constellation-hero">
-                    <svg id="hero-constellation" viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Background fill to make constellation visible <!--
-                        <rect x="0" y="0" width="1" height="1" fill="var(--color-paper)"/>
-                        <defs>
-                            <clipPath id="node-label-clip">
-                                <rect x="0" y="0" width="1" height="1"/>
-                            </clipPath>
-                        </defs>
-                        <!-- Lines connecting nodes -->
-                        <g class="constellation-lines"></g>
-                        <!-- Nodes -->
-                        <g class="constellation-nodes"></g>
+                    <svg id="hero-constellation" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="navigation" aria-label="Constellation navigation">
+                        <!-- Contents (lines + nodes) are built by constellation.js -->
                     </svg>
                 </div>
             </div>
@@ -163,23 +153,23 @@
                     </svg>
                 </div>
             </div>
-            <div class="researcher-content">
-                <div class="publication">
+            <ul class="researcher-content">
+                <li class="publication">
                     <h4 class="publication-title">Distributed Consensus in Noisy Networks</h4>
                     <span class="publication-venue">arXiv preprint, June 2026</span>
-                    <p class="publication-summary">A theoretical analysis of consensus protocols under network noise and Byzantine failures. Introduces a novel fault tolerance bound that improves upon traditional Raft limits.</p>
-                </div>
-                <div class="publication">
+                    <p class="publication-summary">A theoretical analysis of consensus protocols under network noise and Byzantine failures, introducing a novel fault-tolerance bound that improves on traditional Raft limits.</p>
+                </li>
+                <li class="publication">
                     <h4 class="publication-title">Machine Learning for Query Optimization</h4>
                     <span class="publication-venue">VLDB 2024</span>
                     <p class="publication-summary">Empirical study showing ML-based cost estimation outperforms traditional statistical models by 35% on complex analytical workloads.</p>
-                </div>
-                <div class="publication">
+                </li>
+                <li class="publication">
                     <h4 class="publication-title">Scalable Leader Election in Partitioned Networks</h4>
-                    <span class="publication-venue">Under review at OSDI 2025</span>
-                    <p class="publication-summary">Proposes a new leader election algorithm that maintains liveness during network partitions while minimizing split-brain scenarios.</p>
-                </div>
-            </div>
+                    <span class="publication-venue">Under review, OSDI 2025</span>
+                    <p class="publication-summary">Proposes a leader-election algorithm that maintains liveness during network partitions while minimizing split-brain scenarios.</p>
+                </li>
+            </ul>
         </section>
 
         <!-- Human Section -->
@@ -205,9 +195,20 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-constellation">
-                <svg id="footer-constellation" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <g class="footer-lines"></g>
-                    <g class="footer-nodes"></g>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <!-- Static mini kite motif -->
+                    <g stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18" stroke-linecap="round">
+                        <line x1="50" y1="15" x2="85" y2="50"/>
+                        <line x1="50" y1="15" x2="15" y2="50"/>
+                        <line x1="85" y1="50" x2="50" y2="85"/>
+                        <line x1="15" y1="50" x2="50" y2="85"/>
+                    </g>
+                    <g fill="currentColor">
+                        <circle cx="50" cy="15" r="2.5"/>
+                        <circle cx="85" cy="50" r="2.5"/>
+                        <circle cx="50" cy="85" r="2.5"/>
+                        <circle cx="15" cy="50" r="2.5"/>
+                    </g>
                 </svg>
             </div>
             <div class="footer-links">

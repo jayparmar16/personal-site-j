@@ -33,23 +33,11 @@
   --spacing-section-desktop: 160px;
   --spacing-section-mobile: 80px;
 
-  /* Animation */
+  /* Animation — constellation drift values mirrored in constellation.js */
   --drift-amplitude: 8px;
   --drift-duration: 10s;
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
-  --hover-glow-radius: 20px;
-  --hover-glow-opacity: 0.6;
-
-  /* Constellation Animations */
-  --constellation-drift-amplitude: 8px;
-  --constellation-drift-duration: 10s;
-  --constellation-node-radius: 5px;
-  --constellation-line-opacity: 0.18;
-  --constellation-glow-opacity: 0.3;
-  --constellation-hub-size: 8px;
-  --constellation-node-size: 4px;
-  --constellation-line-length: 30px;
 }
 
 /* Base Reset & Box Model */
@@ -125,7 +113,7 @@ p {
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  color: var(--color-stone);
+  color: var(--color-fern);
   margin-bottom: 0.5rem;
 }
 
@@ -292,33 +280,51 @@ section {
   width: 100%;
   height: auto;
   max-width: 320px;
+  overflow: visible;
 }
 
-/* Constellation Nodes - CSS fallback animations */
-.constellation-nodes .node {
+/* Node group — keyboard focus shouldn't draw the default outline on the <g> */
+.node-group {
+  cursor: pointer;
+  outline: none;
+}
+
+/* Dot */
+.node-group .node {
   transition: fill var(--transition-base);
 }
 
-.constellation-nodes .node-group:hover .node {
-  fill: var(--color-fern) !important;
+.node-group:hover .node,
+.node-group:focus-visible .node {
+  fill: var(--color-fern);
 }
 
-.constellation-nodes .node-label {
-  transition: fill var(--transition-fast);
-}
-
-.constellation-nodes .node-group:hover .node-label {
-  fill: var(--color-stone) !important;
-}
-
-/* Node glow effect */
+/* Ambient glow — faint at rest, fern + larger on interaction */
 .node-glow {
-  transition: r var(--transition-base), opacity var(--transition-base);
+  transition: r var(--transition-base), opacity var(--transition-base),
+    fill var(--transition-base);
 }
 
-.node-group:hover .node-glow {
-  r: var(--hover-glow-radius) !important;
-  opacity: var(--hover-glow-opacity) !important;
+.node-group:hover .node-glow,
+.node-group:focus-visible .node-glow {
+  r: 18px;
+  opacity: 0.5;
+  fill: var(--color-fern);
+}
+
+/* Label — mono, stone, revealed on interaction */
+.node-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--color-stone);
+  opacity: 0;
+  transition: opacity var(--transition-fast), fill var(--transition-fast);
+}
+
+.node-group:hover .node-label,
+.node-group:focus-visible .node-label {
+  opacity: 1;
+  fill: var(--color-fern);
 }
 
 /* =============================================
@@ -492,23 +498,23 @@ section {
   margin-bottom: 2rem;
 }
 
+/* Minimal CV-style list */
 .researcher-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 600px) {
-  .researcher-content {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  list-style: none;
+  max-width: 62ch;
 }
 
 .publication {
-  background-color: var(--color-paper);
-  border: 1px solid rgba(35, 38, 35, 0.05);
-  border-radius: 8px;
-  padding: 1.25rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(35, 38, 35, 0.1);
+}
+
+.publication:first-child {
+  padding-top: 0;
+}
+
+.publication:last-child {
+  border-bottom: none;
 }
 
 .publication-title {
@@ -517,16 +523,18 @@ section {
 }
 
 .publication-venue {
+  display: block;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  color: var(--color-stone);
-  margin-bottom: 0.75rem;
+  color: var(--color-fern);
+  margin-bottom: 0.5rem;
 }
 
 .publication-summary {
   font-size: 0.9375rem;
-  color: var(--color-graphite);
+  color: var(--color-stone);
   line-height: 1.6;
+  margin-bottom: 0;
 }
 
 /* =============================================
@@ -571,84 +579,10 @@ section {
 }
 
 .footer-constellation svg {
-  width: 60px;
-  height: 60px;
-  opacity: 0.3;
-}
-
-/* =============================================
-   CONSTELLATION ANIMATIONS
-   ============================================= */
-
-/* Hub pulse animation */
-.constellation-hub {
-  animation: hub-pulse 3s ease-in-out infinite;
-}
-
-@keyframes hub-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-
-/* Node hover pulse */
-.constellation-node {
-  transition: fill var(--transition-fast), transform var(--transition-fast);
-}
-
-.constellation-node:hover {
-  transform: scale(1.2);
-}
-
-/* Node glow effect */
-.constellation-node-glow {
-  opacity: var(--constellation-glow-opacity);
-  transition: opacity var(--transition-fast);
-  pointer-events: none;
-}
-
-.constellation-node-glow:hover {
-  opacity: 0.6;
-}
-
-/* Constellation hover states */
-.constellation-hero:hover .constellation-lines,
-.constellation-hero:hover .constellation-nodes {
-  animation: constellation-drift 8s ease-in-out infinite;
-}
-
-@keyframes constellation-drift {
-  0%, 100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  25% {
-    transform: translateX(4px) rotate(1deg);
-  }
-  50% {
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  75% {
-    transform: translateX(2px) rotate(0.5deg);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .constellation-lines,
-  .constellation-nodes,
-  .constellation-hub {
-    animation: none;
-    transition: none;
-  }
-
-  .constellation-node:hover {
-    transform: none;
-  }
+  width: 80px;
+  height: 80px;
+  color: var(--color-paper);
+  opacity: 0.4;
 }
 
 .footer-links {
