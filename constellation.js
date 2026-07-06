@@ -39,7 +39,7 @@
     linkMinOpacity: 0.10,
     linkMaxOpacity: 0.55,
     energyEase: 0.10,         // smoothing for the displayed energy value
-    clickThreshold: 4,        // px of travel under which a press = click
+    clickThreshold: 8,        // px of travel under which a press = click (finger-friendly)
   };
 
   const prefersReducedMotion = window.matchMedia(
@@ -261,14 +261,16 @@
     let downPt = null;     // pointer pos at press (client coords)
     let travel = 0;
 
+    let grab = { x: 0, y: 0 };  // offset so the node doesn't jump to the finger
+
     group.addEventListener('pointerdown', (e) => {
       const p = svgPoint(svg, e.clientX, e.clientY);
       if (!p) return;
       e.preventDefault();
       group.setPointerCapture(e.pointerId);
       node.dragging = true;
-      node.samples = [{ x: p.x, y: p.y, t: performance.now() }];
-      node.pos.x = p.x; node.pos.y = p.y;
+      grab = { x: node.pos.x - p.x, y: node.pos.y - p.y };
+      node.samples = [{ x: node.pos.x, y: node.pos.y, t: performance.now() }];
       node.vel.x = 0; node.vel.y = 0;
       downPt = { x: e.clientX, y: e.clientY };
       travel = 0;
@@ -279,9 +281,9 @@
       if (!node.dragging) return;
       const p = svgPoint(svg, e.clientX, e.clientY);
       if (!p) return;
-      node.pos.x = clamp(p.x, CONFIG.pad, VIEW.w - CONFIG.pad);
-      node.pos.y = clamp(p.y, CONFIG.pad, VIEW.h - CONFIG.pad);
-      node.samples.push({ x: p.x, y: p.y, t: performance.now() });
+      node.pos.x = clamp(p.x + grab.x, CONFIG.pad, VIEW.w - CONFIG.pad);
+      node.pos.y = clamp(p.y + grab.y, CONFIG.pad, VIEW.h - CONFIG.pad);
+      node.samples.push({ x: node.pos.x, y: node.pos.y, t: performance.now() });
       if (node.samples.length > 6) node.samples.shift();
       travel = Math.max(travel,
         Math.hypot(e.clientX - downPt.x, e.clientY - downPt.y));
