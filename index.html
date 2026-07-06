@@ -3,8 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Personal website showcasing projects, research, and thought work.">
+    <meta name="description" content="Jay Parmar — software architect and founder. Builder, founder, researcher working at the intersection of distributed systems and product.">
     <title>Jay Parmar — Builder, Founder, Researcher</title>
+    <meta name="theme-color" content="#FAFAF7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
+
+    <!-- Resolve theme before paint to avoid a flash of the wrong theme -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme = stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +35,21 @@
             <div class="nav-brand">
                 <a href="#hero">JP</a>
             </div>
-            <a href="mailto:contact@jayparmar.dev" class="nav-contact">Contact</a>
+            <div class="nav-actions">
+                <button type="button" class="nav-cmdk" data-command-open aria-label="Open command palette" aria-keyshortcuts="Meta+K Control+K">
+                    <span class="cmdk-keys"><kbd class="kbd-mod">⌘</kbd><kbd>K</kbd></span>
+                </button>
+                <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+                    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                    </svg>
+                    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <a href="mailto:contact@jayparmar.dev" class="nav-contact">Contact</a>
+            </div>
         </nav>
     </header>
 
@@ -43,6 +71,7 @@
                     <svg id="hero-constellation" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="navigation" aria-label="Constellation navigation">
                         <!-- Contents (lines + nodes) are built by constellation.js -->
                     </svg>
+                    <p class="constellation-hint" aria-hidden="true">drag the stars</p>
                 </div>
             </div>
         </section>
@@ -68,6 +97,20 @@
                         <span class="now-text">Speaking at DevConf on "Building Resilient Microservices Systems"</span>
                     </li>
                 </ul>
+
+                <!-- Living GitHub feed (populated by site.js; static fallback below) -->
+                <div class="github-feed" id="github-feed" aria-live="polite">
+                    <h3 class="github-feed-title">
+                        <span class="now-label">lately on github</span>
+                        <a href="https://github.com/jayparmar16" class="github-feed-link" target="_blank" rel="noopener">@jayparmar16</a>
+                    </h3>
+                    <ul class="github-list" id="github-list" data-fallback>
+                        <!-- Static fallback rendered until/if the API responds -->
+                        <li class="github-item">
+                            <a class="github-repo" href="https://github.com/jayparmar16" target="_blank" rel="noopener">View recent work on GitHub →</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </section>
 
@@ -77,49 +120,111 @@
                 <span class="section-label">selected work</span>
                 <div class="section-node-pair">
                     <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="5" cy="5" r="2" fill="#232623"/>
-                        <circle cx="15" cy="15" r="2" fill="#232623"/>
-                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                        <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                        <circle cx="15" cy="15" r="2" fill="currentColor"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18"/>
                     </svg>
                 </div>
             </div>
             <div class="builder-content">
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <h3 class="project-title">AssetReady</h3>
-                        <div class="project-stack">
-                            <span class="stack-tag">Node.js</span>
-                            <span class="stack-tag">PostgreSQL</span>
-                            <span class="stack-tag">Kubernetes</span>
+                <details class="project-card">
+                    <summary class="project-summary">
+                        <div class="project-card-header">
+                            <h3 class="project-title">AssetReady</h3>
+                            <div class="project-stack">
+                                <span class="stack-tag">Node.js</span>
+                                <span class="stack-tag">PostgreSQL</span>
+                                <span class="stack-tag">Kubernetes</span>
+                            </div>
+                        </div>
+                        <p class="project-description">A platform that helps engineering teams track, organize, and collaborate on technical assets — built for developer experience and scale.</p>
+                        <span class="project-metric">10k+ daily active users</span>
+                        <span class="project-toggle" aria-hidden="true">Read the case study</span>
+                    </summary>
+                    <div class="case-study">
+                        <div class="case-block">
+                            <span class="case-label">Problem</span>
+                            <p>Teams scattered infrastructure knowledge across wikis, tickets, and tribal memory — onboarding was slow and incidents repeated.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Approach</span>
+                            <p>Designed a unified asset graph with event-sourced history and role-based access, deployed on Kubernetes with zero-downtime migrations.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Result</span>
+                            <p>Grew from side project to 10k+ DAU; median onboarding time for new engineers cut by half.</p>
+                        </div>
+                        <div class="case-links">
+                            <a href="https://assetready.io" class="project-link" target="_blank" rel="noopener">Live site →</a>
                         </div>
                     </div>
-                    <p class="project-description">A comprehensive asset management platform that helps teams track, organize, and collaborate on technical projects. Built with a focus on developer experience and scalability.</p>
-                    <a href="https://assetready.io" class="project-link" target="_blank" rel="noopener">Visit →</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <h3 class="project-title">Distributed Systems Lab</h3>
-                        <div class="project-stack">
-                            <span class="stack-tag">Rust</span>
-                            <span class="stack-tag">gRPC</span>
-                            <span class="stack-tag">Apache Kafka</span>
+                </details>
+
+                <details class="project-card">
+                    <summary class="project-summary">
+                        <div class="project-card-header">
+                            <h3 class="project-title">Distributed Systems Lab</h3>
+                            <div class="project-stack">
+                                <span class="stack-tag">Rust</span>
+                                <span class="stack-tag">gRPC</span>
+                                <span class="stack-tag">Apache Kafka</span>
+                            </div>
+                        </div>
+                        <p class="project-description">An open-source library for fault-tolerant distributed systems — automatic leader election and consensus.</p>
+                        <span class="project-metric">Used in production by several startups</span>
+                        <span class="project-toggle" aria-hidden="true">Read the case study</span>
+                    </summary>
+                    <div class="case-study">
+                        <div class="case-block">
+                            <span class="case-label">Problem</span>
+                            <p>Small teams kept re-implementing consensus and leader election, often subtly wrong under partitions.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Approach</span>
+                            <p>Packaged a battle-tested Raft variant in Rust with a clean gRPC surface and deterministic test harness for partition scenarios.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Result</span>
+                            <p>Adopted by multiple startups; reduced consensus-related incidents to near zero in adopting teams.</p>
+                        </div>
+                        <div class="case-links">
+                            <a href="https://github.com/jayparmar16" class="project-link" target="_blank" rel="noopener">Source →</a>
                         </div>
                     </div>
-                    <p class="project-description">An open-source library for building fault-tolerant distributed systems with automatic leader election and consensus protocols. Used by several startups in production.</p>
-                    <a href="https://github.com/jayparmar/distributed-lab" class="project-link" target="_blank" rel="noopener">View on GitHub →</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <h3 class="project-title">Query Optimizer</h3>
-                        <div class="project-stack">
-                            <span class="stack-tag">C++</span>
-                            <span class="stack-tag">SQL</span>
-                            <span class="stack-tag">ML</span>
+                </details>
+
+                <details class="project-card">
+                    <summary class="project-summary">
+                        <div class="project-card-header">
+                            <h3 class="project-title">Query Optimizer</h3>
+                            <div class="project-stack">
+                                <span class="stack-tag">C++</span>
+                                <span class="stack-tag">SQL</span>
+                                <span class="stack-tag">ML</span>
+                            </div>
+                        </div>
+                        <p class="project-description">A machine-learning cost estimator that speeds up complex analytical queries.</p>
+                        <span class="project-metric">−40% query latency on average</span>
+                        <span class="project-toggle" aria-hidden="true">Read the case study</span>
+                    </summary>
+                    <div class="case-study">
+                        <div class="case-block">
+                            <span class="case-label">Problem</span>
+                            <p>Traditional statistical cost models mis-estimated complex joins, producing slow query plans.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Approach</span>
+                            <p>Trained a learned cost model on real workload telemetry and integrated it into the planner behind a feature flag.</p>
+                        </div>
+                        <div class="case-block">
+                            <span class="case-label">Result</span>
+                            <p>40% average latency reduction on analytical workloads; published at VLDB 2024.</p>
+                        </div>
+                        <div class="case-links">
+                            <a href="https://queryoptimizer.dev" class="project-link" target="_blank" rel="noopener">Read paper →</a>
                         </div>
                     </div>
-                    <p class="project-description">A machine learning-based query optimizer that improves database performance by 40% on average for complex analytical queries. Published research at VLDB 2024.</p>
-                    <a href="https://queryoptimizer.dev" class="project-link" target="_blank" rel="noopener">Read paper →</a>
-                </div>
+                </details>
             </div>
         </section>
 
@@ -129,9 +234,9 @@
                 <span class="section-label">what I own</span>
                 <div class="section-node-pair">
                     <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="5" cy="5" r="2" fill="#232623"/>
-                        <circle cx="15" cy="15" r="2" fill="#232623"/>
-                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                        <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                        <circle cx="15" cy="15" r="2" fill="currentColor"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18"/>
                     </svg>
                 </div>
             </div>
@@ -147,9 +252,9 @@
                 <span class="section-label">publications</span>
                 <div class="section-node-pair">
                     <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="5" cy="5" r="2" fill="#232623"/>
-                        <circle cx="15" cy="15" r="2" fill="#232623"/>
-                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                        <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                        <circle cx="15" cy="15" r="2" fill="currentColor"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18"/>
                     </svg>
                 </div>
             </div>
@@ -172,15 +277,52 @@
             </ul>
         </section>
 
+        <!-- Notes Section -->
+        <section id="notes" class="researcher">
+            <div class="section-header">
+                <span class="section-label">writing</span>
+                <div class="section-node-pair">
+                    <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                        <circle cx="15" cy="15" r="2" fill="currentColor"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18"/>
+                    </svg>
+                </div>
+            </div>
+            <ul class="researcher-content">
+                <li class="publication">
+                    <a class="note-title-link" href="#notes">
+                        <h4 class="publication-title">Why restraint is a feature, not a constraint</h4>
+                    </a>
+                    <span class="publication-venue">Notes · Jun 2026</span>
+                    <p class="publication-summary">On designing systems — and interfaces — where the discipline to leave things out is what makes the rest legible.</p>
+                </li>
+                <li class="publication">
+                    <a class="note-title-link" href="#notes">
+                        <h4 class="publication-title">Consensus is a UX problem</h4>
+                    </a>
+                    <span class="publication-venue">Notes · Apr 2026</span>
+                    <p class="publication-summary">What distributed-systems failure modes taught me about designing for trust between people, not just machines.</p>
+                </li>
+                <li class="publication">
+                    <a class="note-title-link" href="#notes">
+                        <h4 class="publication-title">Building AssetReady in public</h4>
+                    </a>
+                    <span class="publication-venue">Notes · Feb 2026</span>
+                    <p class="publication-summary">Early lessons from scaling a side project to ten thousand daily users without a dedicated infra team.</p>
+                </li>
+            </ul>
+        </section>
+
         <!-- Human Section -->
         <section id="human" class="human">
             <div class="section-header">
                 <span class="section-label">beyond work</span>
                 <div class="section-node-pair">
                     <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="5" cy="5" r="2" fill="#232623"/>
-                        <circle cx="15" cy="15" r="2" fill="#232623"/>
-                        <line x1="5" y1="5" x2="15" y2="15" stroke="#232623" stroke-width="0.5" stroke-opacity="0.18"/>
+                        <circle cx="5" cy="5" r="2" fill="currentColor"/>
+                        <circle cx="15" cy="15" r="2" fill="currentColor"/>
+                        <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.18"/>
                     </svg>
                 </div>
             </div>
@@ -212,17 +354,28 @@
                 </svg>
             </div>
             <div class="footer-links">
-                <a href="mailto:contact@jayparmar.dev" class="footer-link">Email</a>
-                <a href="https://github.com/jayparmar" class="footer-link" target="_blank" rel="noopener">GitHub</a>
-                <a href="https://linkedin.com/in/jayparmar" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="mailto:contact@jayparmar.dev" class="footer-link" data-contact-email>Email</a>
+                <a href="https://github.com/jayparmar16" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+                <!-- TODO: replace with real LinkedIn URL -->
+                <a href="https://linkedin.com/in/jayparmar16" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
             </div>
             <p class="colophon">
-                Built with vanilla HTML/CSS/JS. No frameworks. No regrets.
+                Built with vanilla HTML/CSS/JS. No frameworks. No regrets. Press <kbd class="kbd-cmdk">⌘K</kbd> to navigate.
             </p>
         </div>
     </footer>
 
-    <!-- Constellation JavaScript -->
-    <script src="constellation.js"></script>
+    <!-- Command Palette -->
+    <div class="cmdk-overlay" id="cmdk-overlay" hidden>
+        <div class="cmdk-modal" role="dialog" aria-modal="true" aria-label="Command palette">
+            <input type="text" class="cmdk-input" id="cmdk-input" placeholder="Type a command or search…" autocomplete="off" spellcheck="false" aria-label="Command palette search" aria-controls="cmdk-results" aria-expanded="true">
+            <ul class="cmdk-results" id="cmdk-results" role="listbox" aria-label="Commands"></ul>
+            <div class="cmdk-empty" id="cmdk-empty" hidden>No matches</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="constellation.js" defer></script>
+    <script src="site.js" defer></script>
 </body>
 </html>

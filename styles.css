@@ -19,11 +19,22 @@
 
 /* CSS Custom Properties */
 :root {
-  /* Colors */
+  /* Colors — light (default) */
   --color-paper: #FAFAF7;
   --color-graphite: #232623;
   --color-fern: #0F6E56;
   --color-stone: #7A7A72;
+
+  /* Semantic surfaces & hairlines (theme-aware) */
+  --hairline: rgba(35, 38, 35, 0.1);
+  --hairline-faint: rgba(35, 38, 35, 0.05);
+  --surface: rgba(35, 38, 35, 0.02);
+  --surface-tag: rgba(35, 38, 35, 0.04);
+  --fern-wash: rgba(15, 110, 86, 0.08);
+
+  /* Footer is a dark block in both themes */
+  --footer-bg: #232623;
+  --footer-text: #FAFAF7;
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -38,6 +49,26 @@
   --drift-duration: 10s;
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
+  --transition-theme: background-color 300ms ease, color 300ms ease,
+    border-color 300ms ease;
+}
+
+/* Colors — night. Paper→deep bg, graphite→light text/dots; fern brightened
+   for AA contrast on dark. Fern still reads as the lone accent. */
+[data-theme="dark"] {
+  --color-paper: #15171a;
+  --color-graphite: #ECECE8;
+  --color-fern: #3FB494;
+  --color-stone: #9A9A92;
+
+  --hairline: rgba(236, 236, 232, 0.14);
+  --hairline-faint: rgba(236, 236, 232, 0.08);
+  --surface: rgba(236, 236, 232, 0.03);
+  --surface-tag: rgba(236, 236, 232, 0.06);
+  --fern-wash: rgba(63, 180, 148, 0.12);
+
+  --footer-bg: #0F1011;
+  --footer-text: #ECECE8;
 }
 
 /* Base Reset & Box Model */
@@ -64,6 +95,7 @@ body {
   background-color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: var(--transition-theme);
 }
 
 /* Links */
@@ -129,9 +161,10 @@ p {
   left: 0;
   right: 0;
   background-color: var(--color-paper);
-  border-bottom: 1px solid rgba(35, 38, 35, 0.05);
+  border-bottom: 1px solid var(--hairline-faint);
   z-index: 100;
   padding: 0 2rem;
+  transition: var(--transition-theme);
 }
 
 .nav {
@@ -160,14 +193,67 @@ p {
   font-size: 0.875rem;
   color: var(--color-stone);
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(35, 38, 35, 0.1);
+  border: 1px solid var(--hairline);
   border-radius: 4px;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .nav-contact:hover {
   color: var(--color-fern);
   border-color: var(--color-fern);
+}
+
+/* Nav actions cluster: ⌘K hint + theme toggle + contact */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-cmdk,
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--color-stone);
+  cursor: pointer;
+  padding: 0.4rem 0.55rem;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.nav-cmdk:hover,
+.theme-toggle:hover {
+  color: var(--color-fern);
+  border-color: var(--color-fern);
+}
+
+.cmdk-keys {
+  display: flex;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.cmdk-keys kbd {
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.theme-toggle svg { display: block; }
+/* Show the icon for the action available, not the current state */
+.icon-moon { display: none; }
+[data-theme="dark"] .icon-sun { display: none; }
+[data-theme="dark"] .icon-moon { display: block; }
+
+/* Hide the desktop ⌘K hint on small / touch screens */
+@media (max-width: 600px) {
+  .nav-cmdk { display: none; }
 }
 
 /* Main */
@@ -211,6 +297,7 @@ section {
 .section-node-pair svg {
   width: 20px;
   height: 20px;
+  color: var(--color-graphite);
 }
 
 /* =============================================
@@ -271,7 +358,9 @@ section {
 
 /* Constellation Hero */
 .constellation-hero {
+  position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -283,13 +372,41 @@ section {
   overflow: visible;
 }
 
-/* Node group — keyboard focus shouldn't draw the default outline on the <g> */
-.node-group {
-  cursor: pointer;
-  outline: none;
+/* Drag affordance hint — fades out after the first throw */
+.constellation-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--color-stone);
+  opacity: 0.55;
+  margin: 0.75rem 0 0;
+  max-width: none;
+  transition: opacity var(--transition-base);
+  animation: hint-pulse 2.8s ease-in-out infinite;
 }
 
-/* Dot */
+.constellation-hint.is-hidden {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
+
+/* Node group — grabbable; suppress page scroll while dragging on touch */
+.node-group {
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+}
+
+.node-group.is-dragging {
+  cursor: grabbing;
+}
+
+/* Dot — fern on hover/focus (JS owns energy-driven glow color) */
 .node-group .node {
   transition: fill var(--transition-base);
 }
@@ -299,17 +416,10 @@ section {
   fill: var(--color-fern);
 }
 
-/* Ambient glow — faint at rest, fern + larger on interaction */
+/* Glow radius/opacity/fill are driven by JS energy; keep a smooth transition
+   only for the resting hover affordance, not a competing fill rule. */
 .node-glow {
-  transition: r var(--transition-base), opacity var(--transition-base),
-    fill var(--transition-base);
-}
-
-.node-group:hover .node-glow,
-.node-group:focus-visible .node-glow {
-  r: 18px;
-  opacity: 0.5;
-  fill: var(--color-fern);
+  transition: r var(--transition-base), opacity var(--transition-base);
 }
 
 /* Label — mono, stone, revealed on interaction */
@@ -327,16 +437,24 @@ section {
   fill: var(--color-fern);
 }
 
+/* Keyboard focus ring for accessibility */
+.node-group:focus-visible {
+  outline: 2px solid var(--color-fern);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* =============================================
    NOW STRIP
    =============================================
 */
 
 .now-strip {
-  background-color: rgba(35, 38, 35, 0.02);
-  border-top: 1px solid rgba(35, 38, 35, 0.05);
-  border-bottom: 1px solid rgba(35, 38, 35, 0.05);
+  background-color: var(--surface);
+  border-top: 1px solid var(--hairline-faint);
+  border-bottom: 1px solid var(--hairline-faint);
   padding: 3rem 2rem;
+  transition: var(--transition-theme);
 }
 
 .now-container {
@@ -413,14 +531,29 @@ section {
 
 .project-card {
   background-color: var(--color-paper);
-  border: 1px solid rgba(35, 38, 35, 0.05);
+  border: 1px solid var(--hairline-faint);
   border-radius: 8px;
   padding: 1.5rem;
-  transition: border-color var(--transition-base);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .project-card:hover {
   border-color: var(--color-fern);
+}
+
+/* Case-study disclosure */
+.project-summary {
+  cursor: pointer;
+  list-style: none;
+  outline: none;
+}
+
+.project-summary::-webkit-details-marker { display: none; }
+
+.project-summary:focus-visible {
+  outline: 2px solid var(--color-fern);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .project-card-header {
@@ -443,7 +576,7 @@ section {
   font-size: 0.75rem;
   color: var(--color-stone);
   padding: 0.25rem 0.5rem;
-  background-color: rgba(35, 38, 35, 0.03);
+  background-color: var(--surface-tag);
   border-radius: 3px;
 }
 
@@ -452,6 +585,82 @@ section {
   color: var(--color-graphite);
   margin-bottom: 1rem;
   line-height: 1.6;
+}
+
+.project-metric {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-fern);
+  margin-bottom: 0.75rem;
+}
+
+.project-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-stone);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.project-toggle::before {
+  content: '▸';
+  transition: transform var(--transition-base);
+  display: inline-block;
+}
+
+.project-card[open] .project-toggle::before {
+  transform: rotate(90deg);
+}
+
+.project-card[open] .project-toggle {
+  color: var(--color-fern);
+}
+
+/* Expanded case study */
+.case-study {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline);
+  display: grid;
+  gap: 1rem;
+}
+
+.case-block {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.case-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-fern);
+}
+
+.case-block p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-stone);
+  margin-bottom: 0;
+  max-width: none;
+}
+
+.case-links {
+  margin-top: 0.25rem;
+}
+
+/* Subtle open animation, motion-reduced friendly */
+@media (prefers-reduced-motion: no-preference) {
+  .project-card[open] .case-study {
+    animation: case-reveal var(--transition-base);
+  }
+  @keyframes case-reveal {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 }
 
 .project-link {
@@ -465,6 +674,75 @@ section {
 
 .project-link:hover {
   color: var(--color-graphite);
+}
+
+/* =============================================
+   GITHUB FEED
+   ============================================= */
+
+.github-feed {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--hairline-faint);
+  min-height: 120px; /* reserve space — avoid layout shift on fetch */
+}
+
+.github-feed-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.github-feed-link {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.github-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 600px) {
+  .github-list:not([data-fallback]) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.github-item {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.github-repo {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.github-desc {
+  font-size: 0.85rem;
+  color: var(--color-stone);
+  line-height: 1.5;
+  margin-bottom: 0.25rem;
+  max-width: none;
+}
+
+.github-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-stone);
+}
+
+.github-lang::after {
+  content: '·';
+  margin-left: 0.75rem;
+  opacity: 0.5;
 }
 
 /* =============================================
@@ -486,7 +764,7 @@ section {
   color: var(--color-stone);
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(35, 38, 35, 0.1);
+  border-top: 1px solid var(--hairline);
 }
 
 /* =============================================
@@ -506,7 +784,7 @@ section {
 
 .publication {
   padding: 1.5rem 0;
-  border-bottom: 1px solid rgba(35, 38, 35, 0.1);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .publication:first-child {
@@ -520,6 +798,16 @@ section {
 .publication-title {
   color: var(--color-graphite);
   margin-bottom: 0.25rem;
+}
+
+/* Note titles link without the global fern link color */
+.note-title-link {
+  color: inherit;
+  display: inline-block;
+}
+
+.note-title-link:hover .publication-title {
+  color: var(--color-fern);
 }
 
 .publication-venue {
@@ -557,10 +845,11 @@ section {
 */
 
 .footer {
-  background-color: var(--color-graphite);
-  color: var(--color-paper);
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
   padding: 4rem 2rem 2rem;
   margin-top: 6rem;
+  transition: var(--transition-theme);
 }
 
 .footer-content {
@@ -581,7 +870,7 @@ section {
 .footer-constellation svg {
   width: 80px;
   height: 80px;
-  color: var(--color-paper);
+  color: var(--footer-text);
   opacity: 0.4;
 }
 
@@ -595,20 +884,31 @@ section {
 .footer-link {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  color: rgba(250, 250, 247, 0.7);
-  transition: color var(--transition-fast);
+  color: var(--footer-text);
+  opacity: 0.7;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
 }
 
 .footer-link:hover {
-  color: var(--color-paper);
+  opacity: 1;
+  color: var(--color-fern);
 }
 
 .colophon {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: rgba(250, 250, 247, 0.4);
+  color: var(--footer-text);
+  opacity: 0.4;
   margin-top: 1rem;
   text-align: center;
+}
+
+.colophon kbd {
+  font-family: var(--font-mono);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 0.3em;
+  font-size: 0.95em;
 }
 
 /* =============================================
@@ -651,4 +951,93 @@ section {
   section {
     padding: var(--spacing-section-mobile) 1rem;
   }
+}
+
+/* =============================================
+   COMMAND PALETTE
+   ============================================= */
+
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 18vh;
+  background: rgba(20, 22, 20, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.cmdk-overlay[hidden] { display: none; }
+
+.cmdk-modal {
+  width: min(540px, calc(100vw - 2rem));
+  background: var(--color-paper);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cmdk-modal { animation: cmdk-in 160ms ease; }
+  @keyframes cmdk-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+.cmdk-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--color-graphite);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  padding: 1rem 1.25rem;
+  outline: none;
+}
+
+.cmdk-input::placeholder { color: var(--color-stone); }
+
+.cmdk-results {
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.cmdk-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cmdk-item.is-active {
+  background: var(--fern-wash);
+}
+
+.cmdk-label {
+  color: var(--color-graphite);
+  font-size: 0.9375rem;
+}
+
+.cmdk-item.is-active .cmdk-label { color: var(--color-fern); }
+
+.cmdk-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-stone);
+}
+
+.cmdk-empty {
+  padding: 1rem 1.25rem;
+  color: var(--color-stone);
+  font-size: 0.9rem;
 }
