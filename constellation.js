@@ -35,6 +35,10 @@
     pad: 14,                  // keep nodes inside the viewBox (glow headroom)
     maxThrow: 60,             // clamp throw velocity (user units / frame)
 
+    // Drag tether — resists pulling a node far from its (drifting) home spot.
+    tetherRadius: 32,         // px — full-freedom pull before resistance kicks in
+    tetherSoftExtra: 20,      // px — additional stretch, asymptotic (never fully reached)
+
     // Energy → fern.
     linkMinOpacity: 0.10,
     linkMaxOpacity: 0.55,
@@ -99,19 +103,34 @@
   }
 
   /* ---- Drift (moving rest position) ------------------------------------- */
+  // Smooth random-walk per axis: continuously interpolates toward a freshly
+  // randomized nearby target at randomized intervals, so the wander never
+  // repeats (unlike a fixed sum of sines, which retraces a loop).
+  function makeAxisNoise() {
+    return {
+      prev: Math.random() * 2 - 1,
+      next: Math.random() * 2 - 1,
+      t0: 0,
+      dur: 2.5 + Math.random() * 3.5,   // seconds per leg — organic, not metronomic
+    };
+  }
+
+  function sampleAxisNoise(axis, t) {
+    if (t - axis.t0 > axis.dur) {
+      axis.prev = axis.next;
+      axis.next = Math.random() * 2 - 1;
+      axis.t0 = t;
+      axis.dur = 2.5 + Math.random() * 3.5;
+    }
+    const p = clamp((t - axis.t0) / axis.dur, 0, 1);
+    const eased = p * p * (3 - 2 * p);   // smoothstep — no velocity kinks at legs
+    return axis.prev + (axis.next - axis.prev) * eased;
+  }
+
   function seedDrift() {
     nodes.forEach((n) => {
-      n.drift = {
-        wx1: (2 * Math.PI) / (9 + Math.random() * 3),
-        wx2: (2 * Math.PI) / (13 + Math.random() * 3),
-        wx3: (2 * Math.PI) / (23 + Math.random() * 6),  // slow wander
-        wy1: (2 * Math.PI) / (10 + Math.random() * 3),
-        wy2: (2 * Math.PI) / (14 + Math.random() * 3),
-        wy3: (2 * Math.PI) / (25 + Math.random() * 6),
-        px1: Math.random() * Math.PI * 2, px2: Math.random() * Math.PI * 2,
-        px3: Math.random() * Math.PI * 2, py1: Math.random() * Math.PI * 2,
-        py2: Math.random() * Math.PI * 2, py3: Math.random() * Math.PI * 2,
-      };
+      n.driftX = makeAxisNoise();
+      n.driftY = makeAxisNoise();
       // Physics state.
       n.pos = { x: n.x, y: n.y };
       n.vel = { x: 0, y: 0 };
@@ -121,17 +140,10 @@
     });
   }
 
-  // Combined offset stays within ±amplitude (0.5 + 0.3 + 0.2 = 1.0).
   function driftOffset(n, t) {
-    const d = n.drift;
-    const A = CONFIG.driftAmplitude;
     return {
-      x: A * (0.5 * Math.sin(d.wx1 * t + d.px1) +
-              0.3 * Math.sin(d.wx2 * t + d.px2) +
-              0.2 * Math.sin(d.wx3 * t + d.px3)),
-      y: A * (0.5 * Math.cos(d.wy1 * t + d.py1) +
-              0.3 * Math.cos(d.wy2 * t + d.py2) +
-              0.2 * Math.cos(d.wy3 * t + d.py3)),
+      x: CONFIG.driftAmplitude * sampleAxisNoise(n.driftX, t),
+      y: CONFIG.driftAmplitude * sampleAxisNoise(n.driftY, t),
     };
   }
 
@@ -281,8 +293,28 @@
       if (!node.dragging) return;
       const p = svgPoint(svg, e.clientX, e.clientY);
       if (!p) return;
-      node.pos.x = clamp(p.x + grab.x, CONFIG.pad, VIEW.w - CONFIG.pad);
-      node.pos.y = clamp(p.y + grab.y, CONFIG.pad, VIEW.h - CONFIG.pad);
+
+      const desiredX = p.x + grab.x;
+      const desiredY = p.y + grab.y;
+
+      // Rubber-band: track the pointer 1:1 within tetherRadius of the
+      // (drifting) home spot; beyond that, resist with diminishing returns
+      // so the pull asymptotically caps rather than hitting a hard wall.
+      const home = node.home || { x: node.x, y: node.y };
+      const dx = desiredX - home.x;
+      const dy = desiredY - home.y;
+      const dist = Math.hypot(dx, dy);
+      let fx = desiredX, fy = desiredY;
+      if (dist > CONFIG.tetherRadius) {
+        const over = dist - CONFIG.tetherRadius;
+        const eased = CONFIG.tetherSoftExtra * (1 - 1 / (over / CONFIG.tetherSoftExtra + 1));
+        const scale = (CONFIG.tetherRadius + eased) / dist;
+        fx = home.x + dx * scale;
+        fy = home.y + dy * scale;
+      }
+
+      node.pos.x = clamp(fx, CONFIG.pad, VIEW.w - CONFIG.pad);
+      node.pos.y = clamp(fy, CONFIG.pad, VIEW.h - CONFIG.pad);
       node.samples.push({ x: node.pos.x, y: node.pos.y, t: performance.now() });
       if (node.samples.length > 6) node.samples.shift();
       travel = Math.max(travel,
@@ -336,6 +368,7 @@
         const d = driftOffset(node, t);
         const homeX = node.x + d.x;
         const homeY = node.y + d.y;
+        node.home = { x: homeX, y: homeY };
 
         if (!node.dragging) {
           // Home spring.
