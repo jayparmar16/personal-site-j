@@ -395,8 +395,11 @@ section {
   50% { opacity: 0.7; }
 }
 
-/* Node group — grabbable; suppress page scroll while dragging on touch */
-.node-group {
+/* Node group — grabbable; suppress page scroll while dragging on touch.
+   touch-action doesn't reliably propagate to SVG children across engines,
+   so it's set on the hit-testable children directly, not just the <g>. */
+.node-group,
+.node-group * {
   cursor: grab;
   outline: none;
   touch-action: none;

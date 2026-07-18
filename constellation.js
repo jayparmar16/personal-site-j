@@ -30,14 +30,10 @@
 
     // Spring physics.
     kHome: 0.020,             // pull toward the (drifting) rest position
-    kEdge: 0.015,             // edge spring stiffness (tugs neighbors)
-    damping: 0.86,            // velocity decay → wobble then settle
+    kEdge: 0.060,             // edge spring stiffness (tugs neighbors — strong enough that the whole network reshapes together, keeping the diamond silhouette)
+    damping: 0.82,            // velocity decay → wobble then settle (slightly firmer, to keep the stronger edge spring from overshooting)
     pad: 14,                  // keep nodes inside the viewBox (glow headroom)
     maxThrow: 60,             // clamp throw velocity (user units / frame)
-
-    // Drag tether — resists pulling a node far from its (drifting) home spot.
-    tetherRadius: 32,         // px — full-freedom pull before resistance kicks in
-    tetherSoftExtra: 20,      // px — additional stretch, asymptotic (never fully reached)
 
     // Energy → fern.
     linkMinOpacity: 0.10,
@@ -294,27 +290,12 @@
       const p = svgPoint(svg, e.clientX, e.clientY);
       if (!p) return;
 
-      const desiredX = p.x + grab.x;
-      const desiredY = p.y + grab.y;
-
-      // Rubber-band: track the pointer 1:1 within tetherRadius of the
-      // (drifting) home spot; beyond that, resist with diminishing returns
-      // so the pull asymptotically caps rather than hitting a hard wall.
-      const home = node.home || { x: node.x, y: node.y };
-      const dx = desiredX - home.x;
-      const dy = desiredY - home.y;
-      const dist = Math.hypot(dx, dy);
-      let fx = desiredX, fy = desiredY;
-      if (dist > CONFIG.tetherRadius) {
-        const over = dist - CONFIG.tetherRadius;
-        const eased = CONFIG.tetherSoftExtra * (1 - 1 / (over / CONFIG.tetherSoftExtra + 1));
-        const scale = (CONFIG.tetherRadius + eased) / dist;
-        fx = home.x + dx * scale;
-        fy = home.y + dy * scale;
-      }
-
-      node.pos.x = clamp(fx, CONFIG.pad, VIEW.w - CONFIG.pad);
-      node.pos.y = clamp(fy, CONFIG.pad, VIEW.h - CONFIG.pad);
+      // Fluid 1:1 tracking, bounded only by the canvas padding — the
+      // dragged node goes exactly where the pointer/finger goes. Shape
+      // coherence comes from the edge springs (CONFIG.kEdge) pulling the
+      // other nodes to follow, not from resisting this node's own motion.
+      node.pos.x = clamp(p.x + grab.x, CONFIG.pad, VIEW.w - CONFIG.pad);
+      node.pos.y = clamp(p.y + grab.y, CONFIG.pad, VIEW.h - CONFIG.pad);
       node.samples.push({ x: node.pos.x, y: node.pos.y, t: performance.now() });
       if (node.samples.length > 6) node.samples.shift();
       travel = Math.max(travel,
@@ -368,7 +349,6 @@
         const d = driftOffset(node, t);
         const homeX = node.x + d.x;
         const homeY = node.y + d.y;
-        node.home = { x: homeX, y: homeY };
 
         if (!node.dragging) {
           // Home spring.
