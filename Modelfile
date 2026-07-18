@@ -1,8 +1,0 @@
-# Custom model with tuned context window for RTX 3080 10GB + 32GB RAM.
-# The base model at 262k context causes 5+ minute inference times that exceed
-# Claude Code's internal HTTP timeout. 96k context balances usable agentic
-# session length with inference speed. Uses q8_0 KV cache + flash attention
-# to fit within VRAM. Drop to 65536 if inference becomes too slow.
-FROM hf.co/Jackrong/Qwen3.5-9B-Claude-4.6-Opus-Reasoning-Distilled-GGUF:Q6_K
-PARAMETER num_ctx 98304
-PARAMETER num_gpu 99
